@@ -1,0 +1,172 @@
+/* 모든 문자열 가운데 정렬 */
+* {
+    text-align: center;
+}
+
+/* 자주 사용하는 색상 정의 */
+:root {
+    --border-color: rgb(241, 241, 241);
+    --background-color: rgb(218, 218, 218);
+}
+
+/* 게임 화면 */
+#game-panel {
+    background-color: var(--background-color);
+    border: 5px outset var(--border-color);
+    /* 내용물 크기에 맞춤 */
+    width: fit-content;
+    padding: 10px;
+    /* 중앙 정렬 */
+    margin: auto;
+
+    /* 게임 제어판 */
+    #controller {
+        background-color: var(--background-color);
+        border: 5px inset var(--border-color);
+        margin-bottom: 10px;
+
+        /* 입력 박스 */
+        select,
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            height: 26px;
+            max-width: 62px;
+            margin: 5px auto;
+            font-size: 18px;
+            border-radius: 5px;
+            border: 1px solid gray;
+            cursor: pointer;
+        }
+    }
+
+    /* 게임 정보(남은 지뢰, 시작 버튼, 플레이 시간) */
+    #game-info {
+        margin-bottom: 10px;
+        padding: 4px 10px;
+        background-color: var(--background-color);
+        border: 5px inset var(--border-color);
+
+        /* 시작 버튼 */
+        #btn-start {
+            border: 5px outset rgb(255, 255, 255);
+            width: 35px;
+            height: 35px;
+            background-image: url("../images/game_play.png");
+            background-size: cover;
+        }
+
+        /* 남은 지뢰, 플레이 시간 */
+        .display {
+            font-family: "consolas";
+            color: rgb(255, 30, 30);
+            font-size: 30px;
+            background-color: black;
+            font-weight: bold;
+            padding: 0px 10px;
+        }
+    }
+
+    /* 지뢰찾기 판 */
+    #game-container {
+        background-color: var(--background-color);
+        border: 5px inset var(--border-color);
+
+        ul {
+            padding: 0;
+            margin: 0;
+
+            li.row ul {
+                background-color: var(--background-color);
+                border: 1px solid var(--border-color);
+                display: flex;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    }
+}
+
+/* 2차원 배열의 각 배열 별 li 속성 지정 */
+li {
+    list-style: none;
+    height: 30px;
+    width: 30px;
+    background-color: var(--background-color);
+    border: 3px outset var(--border-color);
+    box-sizing: border-box;
+    /* 마우스를 선택하는 모양으로 */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 깃발 설치 */
+.flag {
+    background-image: url("../images/flag.png");
+    background-size: cover;
+}
+
+/* 지뢰 */
+.mine {
+    background-image: url("../images/mine.png");
+    background-size: cover;
+}
+
+/* 지뢰 근처 숫자가 있는 칸 */
+.open-near-mine {
+    background-color: rgba(128, 128, 128, 0.3);
+    border: 1px inset white;
+    font-weight: 900;
+    font-size: 25px;
+}
+
+/* 지뢰가 없거나 숫자가 있는 칸은 마우스 모양 기본값 */
+.open-disable,
+.open-near-mine {
+    cursor: default;
+}
+
+.open-disable,
+.mine {
+    background-color: rgba(128, 128, 128, 0.3);
+    border: 1px inset white;
+}
+
+/* 게임 종료 오버레이 */
+#overlay-gameover.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#overlay-gameover.overlay .content {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#overlay-gameover.message {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#overlay-gameover.button {
+    margin-top: 10px;
+    padding: 12px;
+    width: 120px;
+    height: 36px;
+    border: 0;
+    border-radius: 5px;
+}

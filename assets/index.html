@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>지뢰찾기</title>
+        <link rel="stylesheet" href="./css/style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>지뢰찾기</h1>
+        </header>
+        <main>
+            <div id="game-panel">
+                <div id="controller">
+                    <span>게임 모드</span>
+                    <select id="select-game-mode">
+                        <option value="easy">쉬움</option>
+                        <option value="normal">보통</option>
+                        <option value="hard">어려움</option>
+                    </select>
+                    <div>
+                        <span>게임 크기</span>
+                        <input
+                            type="number"
+                            id="size"
+                            placeholder="게임 크기"
+                            min="5"
+                            max="50"
+                            value="10"
+                        />
+                    </div>
+                    <div>
+                        <span>지뢰 개수</span>
+                        <input
+                            type="number"
+                            id="mine-count"
+                            placeholder="지뢰 개수"
+                            min="1"
+                            max="999"
+                            value="10"
+                        />
+                    </div>
+                </div>
+                <div id="game-info">
+                    <span id="flag-count-display" class="display">000</span>
+                    <button id="btn-start"></button>
+                    <span id="game-time-display" class="display">000</span>
+                </div>
+                <div id="game-container">
+                    <!-- 지뢰찾기 판이 크기에 따라 자동 생성됨 -->
+                </div>
+            </div>
+            <div class="overlay" id="overlay-gameover">
+                <div class="content">
+                    <h2>게임 종료</h2>
+                    <p id="end-message"></p>
+                    <button id="btn-restart">게임 다시 시작</button>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>© 2025 지뢰찾기 게임</p>
+            <p>jho5245 제작</p>
+        </footer>
+        <script src="./js/script.js"></script>
+    </body>
+</html>
