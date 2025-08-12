@@ -160,6 +160,10 @@ body {
 .mine {
     background-image: url("../images/mine.png");
     background-size: cover;
+
+    &.exploded {
+        background-color: red;
+    }
 }
 
 /* 지뢰 근처 숫자가 있는 칸 */

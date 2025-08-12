@@ -381,6 +381,7 @@ function clickEventHandler(event) {
 
     // 지뢰 클릭 시 게임 오버
     if (MINE_MAP[parseRow][parseColumn] === MINE_EXISTS) {
+        target.classList.add("exploded");
         failGame();
         return;
     }
