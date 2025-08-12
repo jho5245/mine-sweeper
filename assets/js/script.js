@@ -49,6 +49,7 @@ const inputSize = document.getElementById("size");
 const inputMineCount = document.getElementById("mine-count");
 
 const restartButton = document.getElementById("btn-restart");
+const investigateButton = document.getElementById("btn-investigate");
 const startButton = document.getElementById("btn-start");
 const debugButton = document.getElementById("btn-debug");
 
@@ -79,6 +80,11 @@ let mouseClicked = false;
 // 게임 종료시 재시작 버튼 클릭
 restartButton.addEventListener("click", () => {
     start();
+});
+
+// 게임 종료시 살펴보기 버튼 클릭
+investigateButton.addEventListener("click", () => {
+    gameOverContainer.style.display = "none";
 });
 
 // 게임 시작 버튼 클릭
