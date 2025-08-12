@@ -10,18 +10,18 @@ const GAME_STATUS = {
 const GAME_MODE = {
     EASY: {
         name: "easy",
-        size: 10,
+        size: 9,
         mineCount: 10,
     },
     NORMAL: {
         name: "normal",
-        size: 16,
-        mineCount: 40,
+        size: 14,
+        mineCount: 30,
     },
     HARD: {
         name: "hard",
-        size: 25,
-        mineCount: 125,
+        size: 18,
+        mineCount: 65,
     },
 };
 
@@ -65,6 +65,8 @@ let MINE_COUNT = 0;
 let timeCount = 0;
 let timerId = null;
 
+let flagCount = 0;
+
 let gameStatus = GAME_STATUS.READY;
 
 // 게임 제어 이벤트
@@ -98,13 +100,13 @@ gameModeSelect.addEventListener("input", (event) => {
 function validate(width, height, mineCount) {
     if (
         !width ||
-        width < 5 ||
+        width < 8 ||
         width > 50 ||
         !height ||
-        height < 5 ||
+        height < 8 ||
         height > 50
     ) {
-        alert("크기는 5 이상 50 이하이어야 합니다.");
+        alert("크기는 8 이상 50 이하이어야 합니다.");
         return false;
     }
     if (!mineCount || mineCount < 1 || mineCount > (width * height) / 2) {
@@ -116,6 +118,10 @@ function validate(width, height, mineCount) {
 
 // 게임 시작 버튼/재시작 버튼 클릭 시 게임 초기화
 function start() {
+    // 게임을 준비 상태로 변경
+    initTimer();
+    gameStatus = GAME_STATUS.READY;
+
     // 노란 얼굴 표정 초기화
     startButton.style.backgroundImage = `url('../assets/images/game_play.png')`;
 
@@ -143,11 +149,6 @@ function start() {
         columns[i].addEventListener("click", clickEventHandler);
         columns[i].addEventListener("contextmenu", rightClickEventHandler);
     }
-
-    // 게임 상태를 시작으로 변경
-    gameStatus = GAME_STATUS.PLAYING;
-    // 타이머 시작
-    timerStart();
 }
 
 // 입력받은 판의 크기, 지뢰 개수에 따라 지뢰찾기판 생성
@@ -163,18 +164,18 @@ function initGame(width, height, mineCount) {
 
     // 입력받은 크기에 맞게 지뢰찾기판 태그 생성
     let temp = `
-        <ul>
+        <ul class="sweeper-ul">
     `;
 
     for (let i = 0; i < MINE_MAP.length; ++i) {
         temp += `
-            <li class="row" style="width: ${width * 30}px;">
-            <ul>
+            <li class="row sweeper-li" style="width: ${width * 30}px;">
+            <ul class="sweeper-ul">
         `;
 
         for (let j = 0; j < MINE_MAP[i].length; ++j) {
             temp += `
-                <li class="column" data-row="${i}" data-column="${j}"></li>
+                <li class="column sweeper-li" data-row="${i}" data-column="${j}"></li>
             `;
         }
         temp += `
@@ -212,14 +213,7 @@ function createMap(rows, columns, mineCount) {
 }
 
 function timerStart() {
-    // 이미 타이머가 있으면 초기화
-    if (timerId) {
-        clearInterval(timerId);
-    }
-
-    // 0초부터 시작
-    timeCount = 0;
-    gameTimeDisplay.innerText = "000";
+    initTimer();
 
     // 1초마다 증가하며 만약 999초가 될 경우 게임 종료
     timerId = setInterval(() => {
@@ -231,9 +225,20 @@ function timerStart() {
     }, 1000);
 }
 
+function initTimer() {
+    // 이미 타이머가 있으면 초기화
+    if (timerId) {
+        clearInterval(timerId);
+    }
+
+    // 0초부터 시작
+    timeCount = 0;
+    gameTimeDisplay.innerText = "000";
+}
+
 // SEARCH_MAP과 FLAG_MAP을 화면애 표시
 function render() {
-    let flagCount = 0;
+    let _flagCount = 0;
     for (let i = 0; i < MINE_MAP.length; ++i) {
         for (let j = 0; j < MINE_MAP[i].length; ++j) {
             const target = columns[i * MINE_MAP.length + j];
@@ -262,14 +267,16 @@ function render() {
             // 발견 정보가 없지만 깃발 정보가 있으면 칸에 깃발 표시후 깃발 개수 증가
             else if (FLAG_MAP[i][j]) {
                 target.classList.add("flag");
-                flagCount++;
+                _flagCount++;
             }
         }
     }
 
+    flagCount = _flagCount;
+
     // (남은 지뢰 수 - 깃발 개수) 표시
     flagCountDisplay.innerText = `${String(
-        Math.max(0, MINE_COUNT - flagCount)
+        Math.max(0, MINE_COUNT - _flagCount)
     ).padStart(3, "0")}`;
 }
 
@@ -327,11 +334,6 @@ function clickEventHandler(event) {
     const parseRow = parseInt(row);
     const parseColumn = parseInt(column);
 
-    // 게임 진행중이 아닐 경우 return
-    if (gameStatus !== GAME_STATUS.PLAYING) {
-        return;
-    }
-
     // 유효하지 않은 위치 클릭
     if (
         parseRow < 0 ||
@@ -341,6 +343,17 @@ function clickEventHandler(event) {
     ) {
         return;
     }
+
+    // 클릭하면 게임 시작
+    if (gameStatus === GAME_STATUS.READY) {
+        // 게임 상태를 시작으로 변경
+        gameStatus = GAME_STATUS.PLAYING;
+        // 타이머 시작
+        timerStart();
+    }
+
+    // 진행 중이 아닐 때 클릭하면 return
+    if (gameStatus !== GAME_STATUS.PLAYING) return;
 
     // 깃발이 꽂혀 있는 칸은 좌클릭해도 아무 동작도 하지 않음
     if (FLAG_MAP[parseRow][parseColumn] === FLAG) {
@@ -392,8 +405,8 @@ function rightClickEventHandler(event) {
     // 게임 정보 화면에 표시
     render();
 
-    // 모든 지뢰를 찾았을 경우 게임 클리어
-    if (checkMine()) {
+    // 깃발의 개수가 지뢰의 개수와 같고 모든 지뢰를 찾았으면 게임 클리어
+    if (parseInt(MINE_COUNT) == parseInt(flagCount) && checkMine()) {
         completeGame();
     }
 }

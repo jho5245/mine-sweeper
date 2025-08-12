@@ -3,16 +3,37 @@
     text-align: center;
 }
 
+/* 수정할 수 없는 글자들 드래그 방지 */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* 자주 사용하는 색상 정의 */
 :root {
-    --border-color: rgb(241, 241, 241);
-    --background-color: rgb(218, 218, 218);
+    --border-color: rgb(240, 240, 240);
+    --border-color-hover: rgb(200, 200, 200);
+    --background-color: rgb(220, 220, 220);
+    --background-color-hover: rgb(180, 180, 180);
+    --mine-background-color: rgb(200, 200, 200);
+}
+
+/* 튀어나온 모양 */
+.border-outset {
+    background-color: var(--background-color);
+    border: 5px outset var(--border-color);
+}
+
+/* 안쪽으로 들어간 모양 */
+.border-inset {
+    background-color: var(--background-color);
+    border: 5px inset var(--border-color);
 }
 
 /* 게임 화면 */
 #game-panel {
-    background-color: var(--background-color);
-    border: 5px outset var(--border-color);
     /* 내용물 크기에 맞춤 */
     width: fit-content;
     padding: 10px;
@@ -21,21 +42,22 @@
 
     /* 게임 제어판 */
     #controller {
-        background-color: var(--background-color);
-        border: 5px inset var(--border-color);
         margin-bottom: 10px;
+
+        /* '게임 모드', '게임 크기', '지뢰 개수' 레이블 */
+        .controller-text {
+            cursor: default;
+        }
 
         /* 입력 박스 */
         select,
         input {
+            /* box 크기가 border, padding 등으로 바뀌는 것 방지 */
             box-sizing: border-box;
-            width: 100%;
-            height: 26px;
-            max-width: 62px;
-            margin: 5px auto;
+            width: 90px;
+            height: 30px;
+            margin: 5px;
             font-size: 18px;
-            border-radius: 5px;
-            border: 1px solid gray;
             cursor: pointer;
         }
     }
@@ -44,16 +66,25 @@
     #game-info {
         margin-bottom: 10px;
         padding: 4px 10px;
-        background-color: var(--background-color);
-        border: 5px inset var(--border-color);
+
+        /* 게임 정보를 양쪽 끝, 가운데 배치 */
+        display: flex;
+        justify-content: space-between;
 
         /* 시작 버튼 */
         #btn-start {
-            border: 5px outset rgb(255, 255, 255);
             width: 35px;
             height: 35px;
+            margin: 0px 10px;
+            /* 마우스를 선택하는 모양으로 */
+            cursor: pointer;
             background-image: url("../images/game_play.png");
             background-size: cover;
+            /* 시작 버튼에 마우스를 올렸을 경우 */
+            &:hover {
+                border-color: var(--border-color-hover);
+                background-color: var(--background-color-hover);
+            }
         }
 
         /* 남은 지뢰, 플레이 시간 */
@@ -64,51 +95,47 @@
             background-color: black;
             font-weight: bold;
             padding: 0px 10px;
-        }
-    }
-
-    /* 지뢰찾기 판 */
-    #game-container {
-        background-color: var(--background-color);
-        border: 5px inset var(--border-color);
-
-        ul {
-            padding: 0;
-            margin: 0;
-
-            li.row ul {
-                background-color: var(--background-color);
-                border: 1px solid var(--border-color);
-                display: flex;
-                padding: 0;
-                margin: 0;
-            }
+            cursor: default;
         }
     }
 }
 
-/* 2차원 배열의 각 배열 별 li 속성 지정 */
-li {
+/* 2차원 배열의 각 배열 별 ul */
+.sweeper-ul {
+    padding: 0;
+    margin: 0;
+
+    li.row .sweeper-ul {
+        display: flex;
+    }
+}
+
+/* 2차원 배열의 각 배열 별 li */
+.sweeper-li {
     list-style: none;
     height: 30px;
     width: 30px;
     background-color: var(--background-color);
     border: 3px outset var(--border-color);
     box-sizing: border-box;
-    /* 마우스를 선택하는 모양으로 */
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    /* 클릭 가능한 칸에 마우스 올림 */
+    &:hover:not(.flag, .open-near-mine, .open-disable) {
+        border: 2px inset var(--border-color);
+        cursor: pointer;
+    }
 }
 
-/* 깃발 설치 */
+/* 깃발이 있는 칸 */
 .flag {
     background-image: url("../images/flag.png");
     background-size: cover;
 }
 
-/* 지뢰 */
+/* 지뢰가 있는 칸 */
 .mine {
     background-image: url("../images/mine.png");
     background-size: cover;
@@ -116,57 +143,63 @@ li {
 
 /* 지뢰 근처 숫자가 있는 칸 */
 .open-near-mine {
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: var(--mine-background-color);
     border: 1px inset white;
-    font-weight: 900;
+    font-weight: bold;
+    font-family: "consolas";
     font-size: 25px;
 }
 
-/* 지뢰가 없거나 숫자가 있는 칸은 마우스 모양 기본값 */
+/* 지뢰가 없는 칸, 지뢰 근처 숫자가 있는 칸 */
 .open-disable,
 .open-near-mine {
     cursor: default;
 }
 
+/* 지뢰가 있는 칸, 지뢰 근처 숫자가 없는 칸 */
 .open-disable,
 .mine {
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: var(--mine-background-color);
     border: 1px inset white;
 }
 
 /* 게임 종료 오버레이 */
-#overlay-gameover.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+#overlay-gameover {
+    &.overlay {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
 
-#overlay-gameover.overlay .content {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
+        /* 맨 앞에 오게 하기 */
+        position: fixed;
+        z-index: 9999; /* z-index는 position이 static 유형이 아닐때만 동작 */
+    }
 
-#overlay-gameover.message {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-}
+    .content {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
 
-#overlay-gameover.button {
-    margin-top: 10px;
-    padding: 12px;
-    width: 120px;
-    height: 36px;
-    border: 0;
-    border-radius: 5px;
+    &.message {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    &.button {
+        margin-top: 10px;
+        padding: 12px;
+        width: 120px;
+        height: 36px;
+        border: 0;
+        border-radius: 5px;
+    }
 }
