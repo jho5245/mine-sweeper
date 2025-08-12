@@ -161,6 +161,7 @@ body {
     background-image: url("../images/mine.png");
     background-size: cover;
 
+    /* 지뢰를 클릭하면 배경색을 빨간색으로 변경 */
     &.exploded {
         background-color: red;
     }
