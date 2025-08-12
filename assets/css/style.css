@@ -85,6 +85,22 @@ body {
                 border-color: var(--border-color-hover);
                 background-color: var(--background-color-hover);
             }
+
+            &.clicked {
+                border: 5px inset var(--border-color);
+            }
+
+            &.surprised {
+                background-image: url("../images/game_click.png");
+            }
+
+            &.fail {
+                background-image: url("../images/game_fail.png");
+            }
+
+            &.clear {
+                background-image: url("../images/game_clear.png");
+            }
         }
 
         /* 남은 지뢰, 플레이 시간 */
@@ -127,6 +143,10 @@ body {
         border-color: var(--border-color-hover);
         background-color: var(--background-color-hover);
         cursor: pointer;
+    }
+
+    &.clicked {
+        border: 3px inset var(--border-color);
     }
 }
 

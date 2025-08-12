@@ -69,6 +69,12 @@ let flagCount = 0;
 
 let gameStatus = GAME_STATUS.READY;
 
+// 마지막으로 클릭한 칸 - 클릭을 유지하면서 마우스를 움직이면 눌러진 효과를 제거하기 위함
+let lastClickedTarget = null;
+
+// 마우스가 클릭중인가?
+let mouseClicked = false;
+
 // 게임 제어 이벤트
 // 게임 종료시 재시작 버튼 클릭
 restartButton.addEventListener("click", () => {
@@ -79,6 +85,12 @@ restartButton.addEventListener("click", () => {
 startButton.addEventListener("click", () => {
     start();
 });
+
+// 게임 시작 버튼 누를 때/뗄 때 디자인 변경
+startButton.addEventListener("mousedown", mouseDownEventHandler);
+startButton.addEventListener("mouseup", mouseUpEventHandler);
+startButton.addEventListener("mouseenter", mouseEnterEventHandler);
+startButton.addEventListener("mouseleave", mouseLeaveEventHandler);
 
 // 난이도 선택 시 맵의 크기, 지뢰의 개수 자동 지정
 gameModeSelect.addEventListener("input", (event) => {
@@ -123,7 +135,8 @@ function start() {
     gameStatus = GAME_STATUS.READY;
 
     // 노란 얼굴 표정 초기화
-    startButton.style.backgroundImage = `url('../assets/images/game_play.png')`;
+    startButton.classList.remove("fail");
+    startButton.classList.remove("clear");
 
     // 게임 종료 오버레이 숨김
     gameOverContainer.style.display = "none";
@@ -148,6 +161,10 @@ function start() {
     for (let i = 0; i < MINE_MAP.length * MINE_MAP[0].length; ++i) {
         columns[i].addEventListener("click", clickEventHandler);
         columns[i].addEventListener("contextmenu", rightClickEventHandler);
+        columns[i].addEventListener("mousedown", mouseDownEventHandler);
+        columns[i].addEventListener("mouseup", mouseUpEventHandler);
+        columns[i].addEventListener("mouseenter", mouseEnterEventHandler);
+        columns[i].addEventListener("mouseleave", mouseLeaveEventHandler);
     }
 }
 
@@ -212,6 +229,7 @@ function createMap(rows, columns, mineCount) {
     return map;
 }
 
+// 타이머 시작
 function timerStart() {
     initTimer();
 
@@ -225,6 +243,7 @@ function timerStart() {
     }, 1000);
 }
 
+// 타이머 초기화
 function initTimer() {
     // 이미 타이머가 있으면 초기화
     if (timerId) {
@@ -327,7 +346,7 @@ function getCountColor(count) {
     }
 }
 
-// 칸을 좌클릭했을 경우
+// 좌클릭 후 손 뗌
 function clickEventHandler(event) {
     const target = event.currentTarget;
     const { row, column } = target.dataset;
@@ -372,7 +391,7 @@ function clickEventHandler(event) {
     render();
 }
 
-// 우클릭 이벤트 핸들러
+// 우클릭 후 손 뗌
 function rightClickEventHandler(event) {
     // 기본 우클릭 이벤트 취소(메뉴 뜨는것)
     event.preventDefault();
@@ -409,6 +428,118 @@ function rightClickEventHandler(event) {
     if (parseInt(MINE_COUNT) == parseInt(flagCount) && checkMine()) {
         completeGame();
     }
+}
+
+// 클릭하고 떼지 않음 (좌클릭만 감지)
+function mouseDownEventHandler(event) {
+    // 좌클릭만 감지. 우클릭은 아무 작업도 하지 않음
+    if ("which" in event && event.which == 3)
+        // Gecko (Firefox), WebKit (Safari/Chrome), Opera
+        return;
+    if ("button" in event && event.button == 2)
+        // IE, Opera
+        return;
+
+    mouseClicked = true;
+    mouseDown(event.currentTarget);
+}
+
+// 마우스 뗌
+function mouseUpEventHandler(event) {
+    mouseClicked = false;
+    mouseLeaveOrUp(event.currentTarget);
+}
+
+// 좌클릭하고 떼지 않음
+function mouseDown(target) {
+    const { row, column } = target.dataset;
+    const parseRow = parseInt(row);
+    const parseColumn = parseInt(column);
+
+    // 시작 버튼 클릭
+    if (target.id == "btn-start") {
+        target.classList.add("clicked");
+        return;
+    }
+
+    // 유효하지 않은 위치 클릭
+    if (
+        parseRow < 0 ||
+        parseColumn < 0 ||
+        parseRow >= MINE_MAP.length ||
+        parseColumn >= MINE_MAP[0].length
+    ) {
+        return;
+    }
+
+    // 준비 중, 진행 중이 아닐 때 클릭하면 return
+    if (gameStatus !== GAME_STATUS.READY && gameStatus !== GAME_STATUS.PLAYING)
+        return;
+
+    // 클릭 가능한 칸이 아니면 return
+    if (SEARCH_MAP[parseRow][parseColumn] !== NO_SEARCH) return;
+
+    // 깃발이 꽂혀 있는 칸은 좌클릭해도 아무 동작도 하지 않음
+    if (FLAG_MAP[parseRow][parseColumn] === FLAG) {
+        return;
+    }
+
+    // 빈 칸을 누르는 동안 시작 버튼 표정이 놀라는 표정이 됨
+    startButton.classList.add("surprised");
+
+    target.classList.add("clicked");
+    lastClickedTarget = target;
+}
+
+// 마우스를 떼거나 누른 상태로 대상에서 벗어남
+function mouseLeaveOrUp(target) {
+    // 시작 버튼 마우스를 뗄 경우 시작 버튼 디자인 롤백
+    if (target.id == "btn-start") {
+        target.classList.remove("clicked");
+        return;
+    }
+
+    const { row, column } = target.dataset;
+    const parseRow = parseInt(row);
+    const parseColumn = parseInt(column);
+
+    startButton.classList.remove("surprised");
+
+    // 유효하지 않은 위치 클릭
+    if (
+        parseRow < 0 ||
+        parseColumn < 0 ||
+        parseRow >= MINE_MAP.length ||
+        parseColumn >= MINE_MAP[0].length
+    ) {
+        return;
+    }
+
+    // 준비 중, 진행 중이 아닐 때 클릭하면 return
+    if (gameStatus !== GAME_STATUS.READY && gameStatus !== GAME_STATUS.PLAYING)
+        return;
+
+    // 클릭 가능한 칸이 아니면 return
+    if (SEARCH_MAP[parseRow][parseColumn] !== NO_SEARCH) return;
+
+    // 마우스를 뗐으니 마지막으로 누른 대상 정보 제거
+    if (lastClickedTarget !== null) {
+        lastClickedTarget.classList.remove("clicked");
+        lastClickedTarget = null;
+    }
+}
+
+// 마우스가 클릭된 상태로 대상에 들어가면 클릭한 것으로 간주
+function mouseEnterEventHandler(event) {
+    if (mouseClicked) {
+        mouseDown(event.currentTarget);
+    }
+}
+
+// 마우스가 대상을 벗어나면 클릭을 해제한 것으로 간주
+function mouseLeaveEventHandler(event) {
+    mouseClicked = false;
+    mouseLeaveOrUp(event.currentTarget);
 }
 
 // 모든 지뢰에 깃발이 꽃혀있는지 확인
@@ -462,7 +593,7 @@ function completeGame() {
     timerId && clearInterval(timerId);
     gameStatus = GAME_STATUS.GAME_CLEAR;
 
-    startButton.style.backgroundImage = `url('../assets/images/game_clear.png')`;
+    startButton.classList.add("clear");
     gameOverContainer.style.display = "flex";
     endMessageContainer.innerText = `게임 클리어! 🎉\n플레이 시간 : ${timeCount}초`;
 }
@@ -472,7 +603,7 @@ function failGame(reason = "게임 오버! 😢") {
     gameStatus = GAME_STATUS.GAME_OVER;
     timerId && clearInterval(timerId);
 
-    startButton.style.backgroundImage = `url('../assets/images/game_fail.png')`;
+    startButton.classList.add("fail");
     gameOverContainer.style.display = "flex";
     endMessageContainer.innerText = reason;
 
