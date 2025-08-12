@@ -13,6 +13,8 @@
         <main>
             <!-- 게임 화면이 표시되는 곳 -->
             <div id="game-panel" class="border-outset">
+
+                <!-- 게임 난이도, 판의 크기, 지뢰의 개수 설정 -->
                 <div id="controller" class="border-inset">
                     <span class="controller-text">게임 모드</span>
                     <select id="select-game-mode" 
@@ -46,13 +48,17 @@
                         />
                     </div>
                 </div>
+
+                <!-- 남은 지뢰, 플레이 시간 표시시 -->
                 <div id="game-info" class="border-inset">
                     <span id="flag-count-display" class="display">000</span>
                     <button id="btn-start" class="border-outset"></button>
                     <span id="game-time-display" class="display">000</span>
                 </div>
+
+                <!-- 칸을 클릭하는 곳 -->
                 <div id="game-container" class="border-inset">
-                    <!-- 지뢰찾기 판이 크기에 따라 자동 생성됨 -->
+                    <!-- 지뢰찾기 판이 크기에 따라 자동 생성되는 곳 -->
                 </div>
             </div>
 
