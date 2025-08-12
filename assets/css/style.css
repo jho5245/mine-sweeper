@@ -156,7 +156,7 @@ body {
     justify-content: center;
 
     /* 클릭 가능한 칸에 마우스 올림 */
-    &:hover:not(.flag, .open-near-mine, .open-disable) {
+    &:hover:not(.flag, .mine, .open-near-mine, .open-disable) {
         border-color: var(--border-color-hover);
         background-color: var(--background-color-hover);
         cursor: pointer;
