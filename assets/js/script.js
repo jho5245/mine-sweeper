@@ -130,6 +130,9 @@ function validate(width, height, mineCount) {
 
 // 게임 시작 버튼/재시작 버튼 클릭 시 게임 초기화
 function start() {
+    // 게임 종료 오버레이 숨김
+    gameOverContainer.style.display = "none";
+
     // 맵 크기, 지뢰 개수 초기화
     GAME_WIDTH = parseInt(inputSize.value);
     GAME_HEIGHT = GAME_WIDTH; // 세로 크기를 가로 크기와 동일하게 설정
@@ -148,8 +151,6 @@ function start() {
     startButton.classList.remove("fail");
     startButton.classList.remove("clear");
 
-    // 게임 종료 오버레이 숨김
-    gameOverContainer.style.display = "none";
 
     // 지뢰 개수 표시 (000~999)
     flagCountDisplay.innerText = `${String(MINE_COUNT).padStart(3, "0")}`;
