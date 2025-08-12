@@ -37,6 +37,7 @@ body {
     /* 내용물 크기에 맞춤 */
     width: fit-content;
     padding: 10px;
+
     /* 중앙 정렬 */
     margin: auto;
 
@@ -59,6 +60,18 @@ body {
             margin: 5px;
             font-size: 18px;
             cursor: pointer;
+
+            /* 입력 박스에 마우스 올림 */
+            &:hover {
+                border-color: var(--border-color-hover);
+                background-color: var(--background-color-hover);
+            }
+        }
+
+        /* 선택 입력 박스 선택 */
+        select:focus {
+            border-color: var(--border-color);
+            background-color: var(--background-color);
         }
     }
 
@@ -86,18 +99,22 @@ body {
                 background-color: var(--background-color-hover);
             }
 
+            /* 시작 버튼 클릭 */
             &.clicked {
                 border: 5px inset var(--border-color);
             }
 
+            /* 게임 칸을 눌렀을 때 시작 버튼이 놀라는 표정 */
             &.surprised {
                 background-image: url("../images/game_click.png");
             }
 
+            /* 게임 실패 */
             &.fail {
                 background-image: url("../images/game_fail.png");
             }
 
+            /* 게임 클리어 */
             &.clear {
                 background-image: url("../images/game_clear.png");
             }
@@ -145,6 +162,7 @@ body {
         cursor: pointer;
     }
 
+    /* 칸 클릭 */
     &.clicked {
         border: 3px inset var(--border-color);
     }
