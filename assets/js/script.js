@@ -458,45 +458,17 @@ function mouseUpEventHandler(event) {
     mouseLeaveOrUp(event.currentTarget);
 }
 
-// 좌클릭하고 떼지 않음
-function mouseDown(target) {
-    const { row, column } = target.dataset;
-    const parseRow = parseInt(row);
-    const parseColumn = parseInt(column);
-
-    // 시작 버튼 클릭
-    if (target.id == "btn-start") {
-        target.classList.add("clicked");
-        return;
+// 마우스가 클릭된 상태로 대상에 들어가면 클릭한 것으로 간주
+function mouseEnterEventHandler(event) {
+    if (mouseClicked) {
+        mouseDown(event.currentTarget);
     }
+}
 
-    // 유효하지 않은 위치 클릭
-    if (
-        parseRow < 0 ||
-        parseColumn < 0 ||
-        parseRow >= MINE_MAP.length ||
-        parseColumn >= MINE_MAP[0].length
-    ) {
-        return;
-    }
-
-    // 준비 중, 진행 중이 아닐 때 클릭하면 return
-    if (gameStatus !== GAME_STATUS.READY && gameStatus !== GAME_STATUS.PLAYING)
-        return;
-
-    // 클릭 가능한 칸이 아니면 return
-    if (SEARCH_MAP[parseRow][parseColumn] !== NO_SEARCH) return;
-
-    // 깃발이 꽂혀 있는 칸은 좌클릭해도 아무 동작도 하지 않음
-    if (FLAG_MAP[parseRow][parseColumn] === FLAG) {
-        return;
-    }
-
-    // 빈 칸을 누르는 동안 시작 버튼 표정이 놀라는 표정이 됨
-    startButton.classList.add("surprised");
-
-    target.classList.add("clicked");
-    lastClickedTarget = target;
+// 마우스가 대상을 벗어나면 클릭을 해제한 것으로 간주
+function mouseLeaveEventHandler(event) {
+    mouseClicked = false;
+    mouseLeaveOrUp(event.currentTarget);
 }
 
 // 마우스를 떼거나 누른 상태로 대상에서 벗어남
@@ -537,17 +509,45 @@ function mouseLeaveOrUp(target) {
     }
 }
 
-// 마우스가 클릭된 상태로 대상에 들어가면 클릭한 것으로 간주
-function mouseEnterEventHandler(event) {
-    if (mouseClicked) {
-        mouseDown(event.currentTarget);
-    }
-}
+// 좌클릭하고 떼지 않음
+function mouseDown(target) {
+    const { row, column } = target.dataset;
+    const parseRow = parseInt(row);
+    const parseColumn = parseInt(column);
 
-// 마우스가 대상을 벗어나면 클릭을 해제한 것으로 간주
-function mouseLeaveEventHandler(event) {
-    mouseClicked = false;
-    mouseLeaveOrUp(event.currentTarget);
+    // 시작 버튼 클릭
+    if (target.id == "btn-start") {
+        target.classList.add("clicked");
+        return;
+    }
+
+    // 유효하지 않은 위치 클릭
+    if (
+        parseRow < 0 ||
+        parseColumn < 0 ||
+        parseRow >= MINE_MAP.length ||
+        parseColumn >= MINE_MAP[0].length
+    ) {
+        return;
+    }
+
+    // 준비 중, 진행 중이 아닐 때 클릭하면 return
+    if (gameStatus !== GAME_STATUS.READY && gameStatus !== GAME_STATUS.PLAYING)
+        return;
+
+    // 클릭 가능한 칸이 아니면 return
+    if (SEARCH_MAP[parseRow][parseColumn] !== NO_SEARCH) return;
+
+    // 깃발이 꽂혀 있는 칸은 좌클릭해도 아무 동작도 하지 않음
+    if (FLAG_MAP[parseRow][parseColumn] === FLAG) {
+        return;
+    }
+
+    // 빈 칸을 누르는 동안 시작 버튼 표정이 놀라는 표정이 됨
+    startButton.classList.add("surprised");
+
+    target.classList.add("clicked");
+    lastClickedTarget = target;
 }
 
 // 모든 지뢰에 깃발이 꽃혀있는지 확인
