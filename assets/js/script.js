@@ -124,7 +124,7 @@ function validate(width, height, mineCount) {
         height < 8 ||
         height > 50
     ) {
-        alert("크기는 8 이상 50 이하이어야 합니다.");
+        alert("게임 크기는 8 이상 50 이하이어야 합니다.");
         return false;
     }
     if (!mineCount || mineCount < 1 || mineCount > (width * height) / 2) {
